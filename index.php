@@ -287,7 +287,6 @@ function woocommerce_vipulucky_payzippy_init() {
                                 $order->update_status('failed');
                                 $order->add_order_note('Failed');
                             }
-                            add_action('the_content', array(&$this, 'showMessage'));
                         }
                     } catch (Exception $e) {
                         // $errorOccurred = true;
