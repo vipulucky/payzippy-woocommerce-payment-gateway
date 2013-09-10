@@ -169,7 +169,25 @@ function woocommerce_vipulucky_payzippy_init() {
             }
             
             $woocommerce->add_inline_js( '
+				jQuery(function(){
+					jQuery("body").block({
+						message: "'.__('Thank you for your order. We are now redirecting you to Payzippy Payment Gateway to make payment.', 'vipulucky').'",
+						overlayCSS: {
+							background		: "#fff",
+							opacity			: 0.6
+						},
+						css: {
+							padding			: 20,
+							textAlign		: "center",
+							color			: "#555",
+							border			: "3px solid #aaa",
+							backgroundColor	: "#fff",
+							cursor			: "wait",
+							lineHeight		: "32px"
+						}
+					});
                 jQuery("#submit_payzippy_payment_form").click();
+                });
             ' );
             
             return '<form action="' . $this->liveurl . '" method="post" id="payzippy_payment_form">
