@@ -199,21 +199,19 @@ function woocommerce_vipulucky_payzippy_init() {
         function check_payzippy_response() {
             
             global $woocommerce;
-            $woocommerce->cart->empty_cart();
             if (isset($_REQUEST['merchant_transaction_id']) && isset($_REQUEST['payzippy_transaction_id'])) {
                 $order_id = explode('_', $_REQUEST['merchant_transaction_id']);
                 $order_id = (int) $order_id[0];
                 if ($order_id != '') {
                     try {
-                        //get parameters
+                        //get order
                         $order = new WC_Order($order_id);
+                        //get parameters from payzippy
                         $hash = $_REQUEST['hash'];
-                        
                         $bank_name = $_REQUEST['bank_name'];
-                        $buyer_email_address = $order->billing_email;
                         $fraud_action = $_REQUEST['fraud_action'];
                         $fraud_details = $_REQUEST['fraud_details'];
-                        $hash_method = 'SHA256';
+                        $hash_method = $_REQUEST['hash_method'];
                         $is_international = $_REQUEST['is_international'];
                         $merchant_id = $this->merchant_id;
                         $merchant_key_id = $this->merchant_key_id;
@@ -224,13 +222,15 @@ function woocommerce_vipulucky_payzippy_init() {
                         $transaction_currency = $_REQUEST['transaction_currency'];
                         $transaction_response_code = $_REQUEST['transaction_response_code'];
                         $transaction_response_message = $_REQUEST['transaction_response_message'];
-                        $transaction_time = $_REQUEST['transaction_time'];
                         $transaction_status = $_REQUEST['transaction_status'];
-                        $transaction_type = 'SALE';
+                        $transaction_time = $_REQUEST['transaction_time'];
+                        $transaction_type = $_REQUEST['transaction_type'];
                         $version = $_REQUEST['version'];
+                        $secret = $this->salt;
                         
                         //string to generate hash from
-                        $hashstr = "$order->billing_email|$transaction_currency|$hash_method|$merchant_id|$merchant_key_id|$order_id_time|$amount|$transaction_type|REDIRECT|$this->salt";
+                        $hashstr = $bank_name.'|'.$fraud_action.'|'.$fraud_details.'|'.$hash_method.'|'.$is_international.'|'.$merchant_id.'|'.$merchant_key_id.'|'.$merchant_transaction_id.'|'.$payment_method.'|'.$payzippy_transaction_id.'|'.$transaction_amount.'|'.$transaction_currency.'|'.$transaction_response_code.'|'.$transaction_response_message.'|'.$transaction_status.'|'.$transaction_time.'|'.$transaction_type.'|'.'|'.'|'.'|'.'|'.'|'.$version.'|'.$secret;
+
                         //generate hash
                         $checkhash = hash('sha256', $hashstr);
                         
@@ -296,6 +296,8 @@ function woocommerce_vipulucky_payzippy_init() {
                     }
                 }
             }
+            wp_redirect(home_url('/'));
+            exit;
         }
 
     }
